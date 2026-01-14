@@ -40,7 +40,6 @@ import { useDocumentStore } from "@/stores";
 import { cn } from "@/lib/utils";
 import {
   mockFolderTree,
-  findFolderById,
   getBreadcrumbPath,
   type TreeFolder,
 } from "@/lib/mock-tree";

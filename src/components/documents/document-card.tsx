@@ -273,7 +273,7 @@ export function DocumentCard({
   );
 }
 
-function DocumentActionsMenu({ document }: { document: Document }) {
+function DocumentActionsMenu({ document: _document }: { document: Document }) {
   return (
     <DropdownMenuContent align="end" className="w-48">
       <DropdownMenuItem className="gap-2">
