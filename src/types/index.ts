@@ -19,3 +19,6 @@ export type {
   UpdateFolderInput,
   FolderTreeItem,
 } from "@/schemas";
+
+// Re-export UI-specific types
+export type { UIDocument, SharedUIDocument } from "./ui-document";
