@@ -3,18 +3,27 @@
 import * as React from "react";
 import { DocumentCard } from "./document-card";
 import { useDocumentStore } from "@/stores";
-import type { Document } from "@/schemas";
+import { useShallow } from "zustand/react/shallow";
+import type { DisplayDocument } from "@/types/ui-document";
 
 interface DocumentGridProps {
-  documents: Document[];
+  documents: DisplayDocument[];
 }
 
-export function DocumentGrid({ documents }: DocumentGridProps) {
-  const { viewMode, selectedDocuments, toggleDocumentSelection, setCurrentDocument } = useDocumentStore();
+export const DocumentGrid = React.memo(function DocumentGrid({ documents }: DocumentGridProps) {
+  // Use shallow comparison to prevent re-renders when unrelated state changes
+  const { viewMode, selectedDocuments, toggleDocumentSelection, setCurrentDocument } = useDocumentStore(
+    useShallow((state) => ({
+      viewMode: state.viewMode,
+      selectedDocuments: state.selectedDocuments,
+      toggleDocumentSelection: state.toggleDocumentSelection,
+      setCurrentDocument: state.setCurrentDocument,
+    }))
+  );
 
-  const handleDocumentClick = (document: Document) => {
-    setCurrentDocument(document);
-  };
+  const handleDocumentClick = React.useCallback((document: DisplayDocument) => {
+    setCurrentDocument(document as Parameters<typeof setCurrentDocument>[0]);
+  }, [setCurrentDocument]);
 
   if (viewMode === "list") {
     return (
@@ -47,4 +56,4 @@ export function DocumentGrid({ documents }: DocumentGridProps) {
       ))}
     </div>
   );
-}
+});
