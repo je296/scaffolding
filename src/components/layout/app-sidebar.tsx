@@ -31,6 +31,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  SidebarMenuSkeleton,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -90,7 +91,7 @@ interface FolderItemProps {
   level?: number;
 }
 
-function FolderItem({ folder, level = 0 }: FolderItemProps) {
+const FolderItem = React.memo(function FolderItem({ folder, level = 0 }: FolderItemProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const hasChildren = folder.children && folder.children.length > 0;
 
@@ -134,7 +135,56 @@ function FolderItem({ folder, level = 0 }: FolderItemProps) {
       </SidebarMenuSubItem>
     </Collapsible>
   );
-}
+});
+
+// Folder tree with collapsibles - rendered only on client to avoid hydration mismatch
+const FolderTree = React.memo(function FolderTree() {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // Show skeleton during SSR/initial render
+    return (
+      <SidebarMenu>
+        {folders.map((folder) => (
+          <SidebarMenuItem key={folder.id}>
+            <SidebarMenuSkeleton showIcon />
+          </SidebarMenuItem>
+        ))}
+      </SidebarMenu>
+    );
+  }
+
+  return (
+    <SidebarMenu>
+      {folders.map((folder) => (
+        <SidebarMenuItem key={folder.id}>
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <SidebarMenuButton className="w-full">
+                <ChevronRight className="h-3 w-3 shrink-0 transition-transform duration-200 [[data-state=open]>&]:rotate-90" />
+                <Folder className="h-4 w-4 text-amber-500/80" />
+                <span className="truncate">{folder.name}</span>
+              </SidebarMenuButton>
+            </CollapsibleTrigger>
+            {folder.children.length > 0 && (
+              <CollapsibleContent>
+                <SidebarMenuSub>
+                  {folder.children.map((child) => (
+                    <FolderItem key={child.id} folder={child as FolderItemProps["folder"]} />
+                  ))}
+                </SidebarMenuSub>
+              </CollapsibleContent>
+            )}
+          </Collapsible>
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
+  );
+});
 
 export function AppSidebar() {
   return (
@@ -189,30 +239,7 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <ScrollArea className="h-[280px]">
-              <SidebarMenu>
-                {folders.map((folder) => (
-                  <SidebarMenuItem key={folder.id}>
-                    <Collapsible>
-                      <CollapsibleTrigger asChild>
-                        <SidebarMenuButton className="w-full">
-                          <ChevronRight className="h-3 w-3 shrink-0 transition-transform duration-200 [[data-state=open]>&]:rotate-90" />
-                          <Folder className="h-4 w-4 text-amber-500/80" />
-                          <span className="truncate">{folder.name}</span>
-                        </SidebarMenuButton>
-                      </CollapsibleTrigger>
-                      {folder.children.length > 0 && (
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {folder.children.map((child) => (
-                              <FolderItem key={child.id} folder={child as FolderItemProps["folder"]} />
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
-                      )}
-                    </Collapsible>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
+              <FolderTree />
             </ScrollArea>
           </SidebarGroupContent>
         </SidebarGroup>

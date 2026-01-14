@@ -82,13 +82,14 @@ export function ThemeProvider({
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
 
-    let resolved: "dark" | "light" = "dark";
-
-    if (theme === "system" && enableSystem) {
-      resolved = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    } else {
-      resolved = theme === "light" ? "light" : "dark";
-    }
+    const resolved: "dark" | "light" =
+      theme === "system" && enableSystem
+        ? window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light"
+        : theme === "light"
+          ? "light"
+          : "dark";
 
     root.classList.add(resolved);
     setResolvedTheme(resolved);
