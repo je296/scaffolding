@@ -101,7 +101,6 @@ export function DocumentTable({ documents }: DocumentTableProps) {
   } = useDocumentStore();
 
   const allSelected = documents.length > 0 && documents.every((d) => selectedDocuments.has(d.id));
-  const someSelected = documents.some((d) => selectedDocuments.has(d.id));
 
   const handleSelectAll = () => {
     if (allSelected) {

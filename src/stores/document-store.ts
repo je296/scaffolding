@@ -88,7 +88,7 @@ const initialState: DocumentState = {
 export const useDocumentStore = create<DocumentState & DocumentActions>()(
   devtools(
     persist(
-      immer((set, get) => ({
+      immer((set, _get) => ({
         ...initialState,
 
         // Document CRUD

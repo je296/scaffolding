@@ -258,7 +258,7 @@ export default function LoginPage() {
           )}
 
           <p className="text-center text-sm text-muted-foreground mt-8">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <a href="#" className="text-cyan-400 hover:text-cyan-300 font-medium">
               Contact your administrator
             </a>
